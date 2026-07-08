@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header"><h4><i class="fas fa-cog me-2"></i>Configurar Juros de Vencimento Padrão</h4></div>
+      <div class="card-body">
+        <form method="POST">
+          <div class="mb-3">
+            <label>Taxa de Juros por Vencimento (% ao mês)</label>
+            <div class="input-group">
+              <input type="number" class="form-control" name="juros_padrao" step="0.01" min="0" value="{{ juros_atual }}">
+              <span class="input-group-text">%</span>
+            </div>
+            <div class="form-text">Esta taxa será aplicada como padrão para novos empréstimos.</div>
+          </div>
+          <div class="alert alert-info">
+            <h6>Como funciona:</h6>
+            <ul class="mb-0">
+              <li>Taxa mensal é convertida em taxa diária (÷ 30)</li>
+              <li>Juros são aplicados automaticamente a cada dia</li>
+              <li>Valor acumula juros sobre juros</li>
+              <li>Você pode alterar para cada empréstimo individualmente</li>
+            </ul>
+          </div>
+          <button type="submit" class="btn btn-primary w-100"><i class="fas fa-save me-2"></i>Salvar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

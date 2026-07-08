@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+  <div class="card-header"><h4><i class="fas fa-check-circle me-2"></i>Faturar Parcela</h4></div>
+  <div class="card-body">
+    <table class="table table-hover">
+      <thead class="table-dark">
+        <tr>
+          <th>Cliente</th><th>Nº Parcela</th><th>Vencimento</th>
+          <th>Valor Original</th><th>Valor Atual</th><th>Juros Venc.</th>
+          <th>Dias Atraso</th><th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in parcelas %}
+        <tr class="{% if p.dias_atraso > 0 %}table-danger{% endif %}">
+          <td>{{ p.cliente_nome }}</td>
+          <td>{{ p.numero }}</td>
+          <td>{{ p.data_vencimento }}</td>
+          <td>{{ formatar_moeda(p.valor_original) }}</td>
+          <td><strong>{{ formatar_moeda(p.valor) }}</strong></td>
+          <td>{{ formatar_moeda(p.juros_vencimento_aplicado) }}</td>
+          <td>
+            {% if p.dias_atraso > 0 %}
+            <span class="badge bg-danger">{{ p.dias_atraso }} dias</span>
+            {% else %}
+            <span class="badge bg-success">Em dia</span>
+            {% endif %}
+          </td>
+          <td>
+            <div class="btn-group">
+              <button type="button" class="btn btn-success btn-sm" onclick="faturarParcela({{ p.id }}, {{ p.valor }})">
+                <i class="fas fa-check"></i> Faturar
+              </button>
+              {% if p.juros_vencimento_aplicado > 0 %}
+              <a href="/historico_juros/{{ p.id }}" class="btn btn-info btn-sm"><i class="fas fa-history"></i></a>
+              {% endif %}
+            </div>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="8" class="text-center">Nenhuma parcela pendente</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal de Faturamento -->
+<div class="modal fade" id="modalFaturamento" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Confirmar Faturamento</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p>Valor da parcela: <strong id="valorParcela"></strong></p>
+        <div class="mb-3">
+          <label for="valorPago" class="form-label">Valor Pago (deixe em branco para valor total)</label>
+          <div class="input-group">
+            <span class="input-group-text">R$</span>
+            <input type="number" class="form-control" id="valorPago" step="0.01" min="0">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <form id="formFaturamento" method="POST" action="/faturar_parcela">
+          <input type="hidden" name="parcela_id" id="parcelaId">
+          <input type="hidden" name="valor_pago" id="valorPagoHidden">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-success">Confirmar Faturamento</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function faturarParcela(parcelaId, valorParcela) {
+    document.getElementById('parcelaId').value = parcelaId;
+    document.getElementById('valorParcela').textContent = 'R$ ' + parseFloat(valorParcela).toFixed(2).replace('.', ',');
+    document.getElementById('valorPago').value = valorParcela;
+    document.getElementById('valorPagoHidden').value = valorParcela;
+    new bootstrap.Modal(document.getElementById('modalFaturamento')).show();
+}
+
+document.getElementById('valorPago').addEventListener('input', function() {
+    document.getElementById('valorPagoHidden').value = this.value || 0;
+});
+</script>
+{% endblock %}

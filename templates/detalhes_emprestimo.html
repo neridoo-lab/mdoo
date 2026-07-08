@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card mb-4">
+  <div class="card-header">
+    <h4><i class="fas fa-file-invoice me-2"></i>Empréstimo #{{ emprestimo.id }}</h4>
+  </div>
+  <div class="card-body">
+    <p><strong>Cliente:</strong> {{ emprestimo.cliente_nome }}</p>
+    <p><strong>Valor:</strong> {{ formatar_moeda(emprestimo.valor) }}</p>
+    <p><strong>Juros:</strong> {{ emprestimo.juros_mensal }}% ao mês</p>
+    <p><strong>Parcelas:</strong> {{ emprestimo.quantidade_parcelas }}x</p>
+    <p><strong>Data:</strong> {{ emprestimo.data_emprestimo }}</p>
+  </div>
+</div>
+
+<h4 class="mb-3"><i class="fas fa-list me-2"></i>Parcelas</h4>
+
+<div class="table-responsive">
+  <table class="table table-hover">
+    <thead class="table-dark">
+      <tr>
+        <th>Nº</th>
+        <th>Vencimento</th>
+        <th>Valor</th>
+        <th>Status</th>
+        <th>Pagamento</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in parcelas %}
+      <tr class="{% if p.status == 'pago' %}table-success{% elif p.data_vencimento < now.strftime('%Y-%m-%d') %}table-danger{% endif %}">
+        <td>{{ p.numero }}/{{ emprestimo.quantidade_parcelas }}</td>
+        <td>{{ p.data_vencimento }}</td>
+        <td>{{ formatar_moeda(p.valor) }}</td>
+        <td>
+          {% if p.status == 'pago' %}
+          <span class="badge bg-success">Pago</span>
+          {% else %}
+          <span class="badge bg-warning">Pendente</span>
+          {% endif %}
+        </td>
+        <td>{{ p.data_pagamento or '-' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<a href="/cliente/{{ emprestimo.cliente_id }}" class="btn btn-secondary"><i class="fas fa-arrow-left me-2"></i>Voltar</a>
+{% endblock %}

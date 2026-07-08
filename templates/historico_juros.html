@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <h4><i class="fas fa-history me-2"></i>Histórico de Juros - {{ parcela.cliente_nome }} - Parcela {{ parcela.numero }}</h4>
+  </div>
+  <div class="card-body">
+    <div class="row mb-4">
+      <div class="col-md-4">
+        <div class="card bg-light"><div class="card-body text-center"><h6>Valor Original</h6><h4>{{ formatar_moeda(parcela.valor_original) }}</h4></div></div>
+      </div>
+      <div class="col-md-4">
+        <div class="card bg-warning"><div class="card-body text-center"><h6>Juros Acumulados</h6><h4>{{ formatar_moeda(parcela.juros_vencimento_aplicado) }}</h4></div></div>
+      </div>
+      <div class="col-md-4">
+        <div class="card bg-danger text-white"><div class="card-body text-center"><h6>Valor Atual</h6><h4>{{ formatar_moeda(parcela.valor) }}</h4></div></div>
+      </div>
+    </div>
+    
+    <h5>Aplicações de Juros</h5>
+    <table class="table table-hover">
+      <thead class="table-dark">
+        <tr><th>Data/Hora</th><th>Valor Anterior</th><th>% Juros</th><th>Valor Juros</th><th>Novo Valor</th></tr>
+      </thead>
+      <tbody>
+        {% for item in historico %}
+        <tr>
+          <td>{{ item.data_aplicacao }}</td>
+          <td>{{ formatar_moeda(item.valor_original) }}</td>
+          <td>{{ "%.4f"|format(item.percentual_juros) }}%</td>
+          <td class="text-danger">{{ formatar_moeda(item.valor_juros) }}</td>
+          <td class="text-success">{{ formatar_moeda(item.novo_valor) }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5" class="text-center">Nenhum juros aplicado ainda</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

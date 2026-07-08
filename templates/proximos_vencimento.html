@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+  <div class="card-header"><h4><i class="fas fa-clock me-2"></i>Próximos do Vencimento (5 dias)</h4></div>
+  <div class="card-body">
+    <table class="table table-hover">
+      <thead class="table-dark">
+        <tr><th>Cliente</th><th>Parcela</th><th>Vencimento</th><th>Valor Original</th><th>Valor Atual</th><th>Ações</th></tr>
+      </thead>
+      <tbody>
+        {% for c in clientes %}
+        <tr>
+          <td>{{ c.nome }}</td>
+          <td>{{ c.numero }}/{{ c.quantidade_parcelas }}</td>
+          <td>{{ c.data_vencimento }}</td>
+          <td>{{ formatar_moeda(c.valor_original) }}</td>
+          <td>{{ formatar_moeda(c.valor_atual) }}</td>
+          <td>
+            <form action="/enviar_notificacao_individual/{{ c.parcela_id }}" method="POST" style="display:inline">
+              <button type="submit" class="btn btn-success btn-sm"><i class="fab fa-whatsapp"></i> Notificar</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="text-center">Nenhum cliente próximo do vencimento</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

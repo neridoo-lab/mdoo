@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+  <div class="card-header"><h4><i class="fas fa-exclamation-triangle me-2"></i>Parcelas Vencidas</h4></div>
+  <div class="card-body">
+    <table class="table table-hover">
+      <thead class="table-dark">
+        <tr><th>Cliente</th><th>Parcela</th><th>Vencimento</th><th>Valor Original</th><th>Valor Atual</th><th>Juros</th><th>Atraso (dias)</th></tr>
+      </thead>
+      <tbody>
+        {% for c in clientes %}
+        <tr class="table-danger">
+          <td>{{ c.nome }}</td>
+          <td>{{ c.numero }}/{{ c.quantidade_parcelas }}</td>
+          <td>{{ c.data_vencimento }}</td>
+          <td>{{ formatar_moeda(c.valor_original) }}</td>
+          <td><strong>{{ formatar_moeda(c.valor_atual) }}</strong></td>
+          <td>{{ formatar_moeda(c.juros_vencimento_aplicado) }}</td>
+          <td><span class="badge bg-danger">{{ c.dias_atraso }}</span></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7" class="text-center">Nenhuma parcela vencida</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

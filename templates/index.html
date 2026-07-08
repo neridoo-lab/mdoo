@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+  <div class="col-md-3 mb-3">
+    <div class="dashboard-card card-info">
+      <div class="stat-value">{{ formatar_moeda(total_investido) }}</div>
+      <div class="stat-label">Total Investido</div>
+    </div>
+  </div>
+  <div class="col-md-3 mb-3">
+    <div class="dashboard-card card-success">
+      <div class="stat-value">{{ formatar_moeda(total_recebido) }}</div>
+      <div class="stat-label">Total Recebido</div>
+    </div>
+  </div>
+  <div class="col-md-3 mb-3">
+    <div class="dashboard-card card-warning">
+      <div class="stat-value">{{ formatar_moeda(total_a_receber) }}</div>
+      <div class="stat-label">Total a Receber</div>
+    </div>
+  </div>
+  <div class="col-md-3 mb-3">
+    <div class="dashboard-card card-info">
+      <div class="stat-value">{{ total_clientes }}</div>
+      <div class="stat-label">Total de Clientes</div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-4 mb-3">
+    <div class="dashboard-card card-danger">
+      <div class="stat-value">{{ formatar_moeda(total_juros_vencimento) }}</div>
+      <div class="stat-label">Juros por Atraso</div>
+    </div>
+  </div>
+  <div class="col-md-4 mb-3">
+    <a href="/proximos_vencimento" class="text-decoration-none">
+      <div class="dashboard-card card-warning text-center">
+        <div class="stat-value">{{ proximos_vencimento }}</div>
+        <div class="stat-label"><i class="fas fa-clock me-2"></i> Próximos do Vencimento</div>
+      </div>
+    </a>
+  </div>
+  <div class="col-md-4 mb-3">
+    <a href="/vencidos" class="text-decoration-none">
+      <div class="dashboard-card card-danger text-center">
+        <div class="stat-value">{{ vencidos }}</div>
+        <div class="stat-label"><i class="fas fa-exclamation-triangle me-2"></i> Vencidos</div>
+      </div>
+    </a>
+  </div>
+</div>
+{% endblock %}
