@@ -1,5 +1,6 @@
-import pywhatkit
+import requests
 import time
+import os
 from datetime import datetime, timedelta
 import sqlite3
 from database import get_db
@@ -7,6 +8,10 @@ from database import get_db
 class WhatsAppService:
     def __init__(self):
         self.tipo_api = self.get_tipo_api()
+        # Configurações para WhatsApp Cloud API
+        self.phone_number_id = os.environ.get("WHATSAPP_PHONE_ID")
+        self.access_token = os.environ.get("WHATSAPP_ACCESS_TOKEN")
+        self.api_url = f"https://graph.facebook.com/v18.0/{self.phone_number_id}/messages"
     
     def get_tipo_api(self):
         conn = get_db()
@@ -52,23 +57,39 @@ class WhatsAppService:
         for chave, valor in dados.items():
             mensagem = mensagem.replace(f'{{{chave}}}', str(valor))
         return mensagem
-    
+
+    # ======================================================
+    # MÉTODO SUBSTITUÍDO – AGORA USA WHATSAPP CLOUD API
+    # ======================================================
     def enviar_mensagem_web(self, telefone, mensagem):
         try:
             telefone_formatado = self.formatar_telefone(telefone)
-            agora = datetime.now()
-            hora = agora.hour
-            minuto = agora.minute + 2
             
-            if minuto >= 60:
-                hora += 1
-                minuto -= 60
+            # Remove o sinal '+' se existir (a API espera apenas números)
+            telefone_limpo = telefone_formatado.replace('+', '')
             
-            pywhatkit.sendwhatmsg(telefone_formatado, mensagem, hora, minuto, 15, True, 5)
-            return True, "Mensagem enviada com sucesso"
+            headers = {
+                "Authorization": f"Bearer {self.access_token}",
+                "Content-Type": "application/json"
+            }
+            
+            payload = {
+                "messaging_product": "whatsapp",
+                "to": telefone_limpo,
+                "type": "text",
+                "text": {"body": mensagem}
+            }
+            
+            response = requests.post(self.api_url, headers=headers, json=payload)
+            response.raise_for_status()  # Levanta exceção se status não for 2xx
+            
+            return True, "Mensagem enviada com sucesso via WhatsApp Cloud API"
+        except requests.exceptions.RequestException as e:
+            return False, f"Erro na requisição: {str(e)}"
         except Exception as e:
             return False, f"Erro ao enviar mensagem: {str(e)}"
-    
+    # ======================================================
+
     def registrar_notificacao(self, parcela_id, cliente_id, telefone, mensagem, status):
         conn = get_db()
         cursor = conn.cursor()
@@ -163,7 +184,7 @@ class WhatsAppService:
                 'mensagem': msg_status
             })
             
-            time.sleep(5)
+            time.sleep(1)  # Pausa de 1 segundo entre mensagens (evita rate limit)
         
         return {
             "status": "success",
