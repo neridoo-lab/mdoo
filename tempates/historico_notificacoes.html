@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+  <div class="card-header d-flex justify-content-between">
+    <h4><i class="fas fa-history me-2"></i>Histórico de Notificações</h4>
+    <a href="/configurar_notificacoes" class="btn btn-primary"><i class="fas fa-cog me-2"></i>Configurar</a>
+  </div>
+  <div class="card-body">
+    <table class="table table-hover">
+      <thead class="table-dark">
+        <tr><th>Data/Hora</th><th>Cliente</th><th>Telefone</th><th>Parcela</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        {% for notif in notificacoes %}
+        <tr>
+          <td>{{ notif.data_envio }}</td>
+          <td>{{ notif.cliente_nome }}</td>
+          <td>{{ notif.telefone }}</td>
+          <td>Parcela {{ notif.numero_parcela }}</td>
+          <td>
+            {% if notif.status == 'enviada' %}
+            <span class="badge bg-success">Enviada</span>
+            {% else %}
+            <span class="badge bg-danger">Erro</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5" class="text-center">Nenhuma notificação enviada ainda</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
